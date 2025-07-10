@@ -1,0 +1,42 @@
+sources:
+  nginx_logs:
+    type: "file"
+    include:
+      - "/mnt/data/nginx-docker/logs/access.log"
+    read_from: "end"
+    data_dir: "/mnt/data/vector-configs"
+
+transforms:
+  parse_nginx:
+    type: "remap"
+    inputs:
+      - "nginx_logs"
+    source: |
+      . = parse_nginx_log!(.message, format: "combined")
+      # Convert structured timestamp into epoch seconds
+      .epoch = to_unix_timestamp(.timestamp)
+
+sinks:
+  console:
+    type: "console"
+    inputs:
+      - "parse_nginx"
+    encoding:
+      codec: "json"
+
+  http_log_sink:
+    type: "http"
+    inputs:
+      - "parse_nginx"
+    encoding:
+      codec: "json"
+    framing:
+      method: "newline_delimited"  # ensures one JSON object per line
+    uri: "http://127.0.0.1:6000/log/v1"
+    method: post
+    compression: none
+    request:
+      headers:
+        Content-Type: "application/json"
+    batch:
+      max_events: 1
