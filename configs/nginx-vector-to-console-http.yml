@@ -40,3 +40,9 @@ sinks:
         Content-Type: "application/json"
     batch:
       max_events: 1
+
+# In the http sink
+# # batch max event is required with
+# framing newline method
+# because then it would send a single json event in each request
+# but without the batch event 1 it would simply send multiple json in newline in the request body
