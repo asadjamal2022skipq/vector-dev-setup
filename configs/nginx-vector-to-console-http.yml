@@ -6,6 +6,13 @@ sources:
     read_from: "end"
     data_dir: "/mnt/data/vector-configs"
 
+  dev_logs:
+    type: "file"
+    include:
+     - "/mnt/queryloop/logs/app/dev.log"
+    read_from: "end"
+    data_dir: "/mnt/data/vector-configs"
+
 transforms:
   parse_nginx:
     type: "remap"
@@ -21,6 +28,7 @@ sinks:
     type: "console"
     inputs:
       - "parse_nginx"
+      - "dev_logs"
     encoding:
       codec: "json"
 
