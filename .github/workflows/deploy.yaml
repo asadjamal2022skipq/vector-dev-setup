@@ -1,0 +1,29 @@
+name: Branch Merge Testing
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+      - release/*
+    branches-ignore:
+      - feature/*
+    types:
+      - opened
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  run_tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4.2.2
+
+    - name: Run pseudo
+      run: echo "Salam"
